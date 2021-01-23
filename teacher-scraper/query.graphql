@@ -1,0 +1,113 @@
+query RatingsListQuery(
+  $id: ID!
+  $ratingCursor: String
+) {
+  node(id: $id) {
+    __typename
+    ... on Teacher {
+      ...RatingsList_teacher
+    }
+    id
+  }
+}
+
+fragment RatingsList_teacher on Teacher {
+  id
+  legacyId
+  department
+  teacherRatingTags {
+    ...RatingTags_rating_tags
+  }
+  relatedTeachers {
+    legacyId
+  }
+  avgDifficulty
+  avgRating
+  school {
+    ...School_school
+  }
+  firstName
+  lastName
+  numRatings
+  ratings(first: 10000000, after: $ratingCursor) {
+    edges {
+      cursor
+      node {
+        ...Rating_rating
+        id
+        __typename
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+fragment School_school on School {
+  id
+  legacyId
+  name
+  city
+  state
+}
+
+fragment Rating_rating on Rating {
+  comment
+  flagStatus
+  ...RatingHeader_rating
+  ...RatingValues_rating
+  ...CourseMeta_rating
+  ...RatingTags_rating
+  ...RatingFooter_rating
+}
+
+fragment RatingHeader_rating on Rating {
+  date
+  class
+  helpfulRating
+  clarityRating
+}
+
+fragment RatingValues_rating on Rating {
+  helpfulRating
+  clarityRating
+  difficultyRating
+}
+
+fragment CourseMeta_rating on Rating {
+  courseType
+  attendanceMandatory
+  wouldTakeAgain
+  grade
+  textbookUse
+  isForCredit
+  isForOnlineClass
+}
+
+fragment RatingTags_rating on Rating {
+  ratingTags
+}
+
+fragment RatingTags_rating_tags on TeacherRatingTags {
+  tagName
+  tagCount
+  legacyId
+}
+
+fragment RatingFooter_rating on Rating {
+  id
+  comment
+  adminReviewedAt
+  flagStatus
+  legacyId
+  thumbsUpTotal
+  thumbsDownTotal
+  thumbs {
+    userId
+    thumbsUp
+    thumbsDown
+    id
+  }
+}
